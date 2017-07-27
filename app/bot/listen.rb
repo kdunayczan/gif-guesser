@@ -21,7 +21,7 @@ Bot.on :message do |message|
 		result = JSON.parse(buffer)
 
 	  message.reply(
-	    attachment: { 'type' => 'image', 'payload' => { 'url' => result["data"].first["images"]["original"]["url"] } }	
+	    attachment: { 'type' => 'image', 'payload' => { 'url' => result["data"].sample["images"]["original"]["url"] } }	
 	  )
 
 	  message.reply(text: 'What is your guess?') 
