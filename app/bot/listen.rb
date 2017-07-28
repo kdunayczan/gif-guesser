@@ -8,7 +8,7 @@ include Facebook::Messenger
 Facebook::Messenger::Subscriptions.subscribe(access_token: ENV["ACCESS_TOKEN"])
 
 Bot.on :message do |message|
-	if message.text.downcase == 'gif guesser'
+	if message.text.downcase == 'play'
 		message.reply(
 		  attachment: {
 		    type: 'template',
