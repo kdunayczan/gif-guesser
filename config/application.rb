@@ -16,3 +16,5 @@ module Gifguesser
 		config.autoload_paths += Dir[Rails.root.join("app", "bot", "*")]
   end
 end
+
+

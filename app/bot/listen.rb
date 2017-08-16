@@ -12,7 +12,7 @@ Facebook::Messenger::Subscriptions.subscribe(access_token: ENV["ACCESS_TOKEN"])
 @how_many = 3
 
 Bot.on :message do |message|
-	message.reply(build_response(message.text.downcase))
+	message.reply(build_response(message.text.downcase.singularize))
 end
 
 Bot.on :postback do |postback|
@@ -26,13 +26,13 @@ Bot.on :postback do |postback|
 end
 
 def build_response(message)
-	if @random_gif 
+	if @random_gif
 		case message
 		when @random_gif
 			reply = { text: "You are correct!\n'start' to play again." }
 			@random_gif = nil
 		when "give up"
-			reply = { text: "Correct answer: #{@random_gif}" }
+			reply = { text: "Correct answer: #{@random_gif}\n'start' to play again." }
 			@random_gif = nil
 		else
 			reply = { text: "Nope! Try Again!\n'give up' to see the answer" }
