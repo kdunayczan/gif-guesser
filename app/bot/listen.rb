@@ -12,41 +12,7 @@ Facebook::Messenger::Subscriptions.subscribe(access_token: ENV["ACCESS_TOKEN"])
 @how_many = 3
 
 Bot.on :message do |message|
-	response = message.text.downcase
-	if @random_gif 
-		case response
-		when @random_gif
-			message.reply(text: "You are correct!\n'start' to play again.")
-			@random_gif = nil
-		when "give up"
-			message.reply(text: "Correct answer: #{@random_gif}")
-			@random_gif = nil
-		else
-			message.reply(text: "Nope! Try Again!\n'give up' to see the answer")
-		end
-	else
-		case response
-		when "start" 
-			@position = 0
-			@text = "Pick a category!\n'more' to see more categories"
-			message.reply(get_categories)		
-		when "more"
-			@position += @how_many
-			@text = "Pick a category!\n'back' to go back\n'more' to see more categories"
-			message.reply(get_categories)		
-		when "back"
-			if @position > 2
-				@position -= @how_many
-				@text = "Pick a category!\n'back' to go back\n'more' to see more categories"
-				message.reply(get_categories)
-			else
-				@text = "Pick a category!\n'more' to see more categories"
-				message.reply(get_categories)
-			end
-		else
-			message.reply(text: "Welcome to Gif Guesser! Please type 'start' to begin.")
-		end
-	end
+	message.reply(build_response(message.text.downcase))
 end
 
 Bot.on :postback do |postback|
@@ -57,6 +23,44 @@ Bot.on :postback do |postback|
 	postback.reply(
 		text: "What is your guess?"
 	)
+end
+
+def build_response(message)
+	if @random_gif 
+		case message
+		when @random_gif
+			reply = { text: "You are correct!\n'start' to play again." }
+			@random_gif = nil
+		when "give up"
+			reply = { text: "Correct answer: #{@random_gif}" }
+			@random_gif = nil
+		else
+			reply = { text: "Nope! Try Again!\n'give up' to see the answer" }
+		end
+	else
+		case message
+		when "start" 
+			@position = 0
+			text = "Pick a category!\n'more' to see more categories"
+			reply = get_categories(text) 		
+		when "more"
+			@position += @how_many
+			text = "Pick a category!\n'back' to go back\n'more' to see more categories"
+			reply = get_categories(text)		
+		when "back"
+			if @position > 2
+				@position -= @how_many
+				text = "Pick a category!\n'back' to go back\n'more' to see more categories"
+				reply = get_categories(text)
+			else
+				text = "Pick a category!\n'more' to see more categories"
+				reply = get_categories(text)
+			end
+		else
+			reply = { text: "Welcome to Gif Guesser!\nPlease type 'start' to begin." }
+		end
+	end
+	reply 
 end
 
 def gif_request(category)
@@ -75,10 +79,10 @@ def gif_request(category)
   }
 end
 
-def get_categories
+def get_categories(text)
 	@options = @categories[@position, @how_many]
 	return { 
-		attachment: load_categories(@text, @options) 
+		attachment: load_categories(text, @options) 
 	}
 end
 
