@@ -7,7 +7,7 @@ include Facebook::Messenger
 
 Facebook::Messenger::Subscriptions.subscribe(access_token: ENV["ACCESS_TOKEN"])
 
-@categories = ["Actions", "Food & Drink", "Animals", "TV Shows", "Sports", "Music"]
+@categories = ["Actions", "Food & Drink", "Animals", "TV Shows", "Sports", "Music", "Celebrities", "Movies"]
 @position = 0
 @how_many = 3
 
@@ -45,7 +45,7 @@ def build_response(message)
 			reply = get_categories(text) 		
 		when "more"
 			@position += @how_many
-			text = "Pick a category!\n'back' to go back\n'more' to see more categories"
+			text = "Pick a category!\n'back' to go back"
 			reply = get_categories(text)		
 		when "back"
 			if @position > 2
