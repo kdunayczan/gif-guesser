@@ -13,12 +13,12 @@ Facebook::Messenger::Subscriptions.subscribe(access_token: ENV["ACCESS_TOKEN"])
 @how_many = 3
 
 Bot.on :message do |message|
-	player_id = message.sender.id
+	player_id = message.sender['id']
 	message.reply(build_response(message.text.downcase.singularize, player_id))
 end
 
 Bot.on :postback do |postback|
-	player_id = postback.sender.id
+	player_id = postback.sender['id']
 	postback.reply(
 		attachment: gif_request(postback.payload.downcase, player_id)
 	)
