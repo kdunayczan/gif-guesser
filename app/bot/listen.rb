@@ -8,16 +8,19 @@ include Facebook::Messenger
 Facebook::Messenger::Subscriptions.subscribe(access_token: ENV["ACCESS_TOKEN"])
 
 @categories = ["Actions", "Food & Drink", "Animals", "TV Shows", "Sports", "Music", "Celebrities", "Movies"]
+@answers = {}
 @position = 0
 @how_many = 3
 
 Bot.on :message do |message|
-	message.reply(build_response(message.text.downcase.singularize))
+	player_id = message.sender.id
+	message.reply(build_response(message.text.downcase.singularize, player_id))
 end
 
 Bot.on :postback do |postback|
+	player_id = postback.sender.id
 	postback.reply(
-		attachment: gif_request(postback.payload.downcase)
+		attachment: gif_request(postback.payload.downcase, player_id)
 	)
 
 	postback.reply(
@@ -25,15 +28,16 @@ Bot.on :postback do |postback|
 	)
 end
 
-def build_response(message)
-	if @seed_word
+def build_response(message, player_id)
+
+	if @answers[player_id]
 		case message
-		when @seed_word
+		when @answers[player_id]
 			reply = { text: "You are correct!\n'start' to play again." }
-			@seed_word = nil
+			@answers[player_id] = nil
 		when "give up"
-			reply = { text: "Correct answer: #{@seed_word}\n'start' to play again." }
-			@seed_word = nil
+			reply = { text: "Correct answer: #{@answers[player_id]}\n'start' to play again." }
+			@answers[player_id] = nil
 		else
 			reply = { text: "Nope! Try Again!\n'give up' to see the answer" }
 		end
@@ -63,10 +67,10 @@ def build_response(message)
 	reply 
 end
 
-def gif_request(category)
+def gif_request(category, player_id)
 	data = CSV.read("#{category}.csv")
-	@seed_word = data[0].sample
-	url = "http://api.giphy.com/v1/gifs/search?q=#{@seed_word}&api_key=#{ENV['GIPHY_API_KEY']}"
+	@answers[player_id] = data[0].sample
+	url = "http://api.giphy.com/v1/gifs/search?q=#{@answers[player_id]}&api_key=#{ENV['GIPHY_API_KEY']}"
 	resp = Net::HTTP.get_response(URI.parse(url))
 	buffer = resp.body
 	result = JSON.parse(buffer)
