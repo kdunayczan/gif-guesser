@@ -26,14 +26,14 @@ Bot.on :postback do |postback|
 end
 
 def build_response(message)
-	if @random_gif
+	if @seed_word
 		case message
-		when @random_gif
+		when @seed_word
 			reply = { text: "You are correct!\n'start' to play again." }
-			@random_gif = nil
+			@seed_word = nil
 		when "give up"
-			reply = { text: "Correct answer: #{@random_gif}\n'start' to play again." }
-			@random_gif = nil
+			reply = { text: "Correct answer: #{@seed_word}\n'start' to play again." }
+			@seed_word = nil
 		else
 			reply = { text: "Nope! Try Again!\n'give up' to see the answer" }
 		end
@@ -65,8 +65,8 @@ end
 
 def gif_request(category)
 	data = CSV.read("#{category}.csv")
-	@random_gif = data[0].sample
-	url = "http://api.giphy.com/v1/gifs/search?q=#{@random_gif}&api_key=#{ENV['GIPHY_API_KEY']}"
+	@seed_word = data[0].sample
+	url = "http://api.giphy.com/v1/gifs/search?q=#{@seed_word}&api_key=#{ENV['GIPHY_API_KEY']}"
 	resp = Net::HTTP.get_response(URI.parse(url))
 	buffer = resp.body
 	result = JSON.parse(buffer)
